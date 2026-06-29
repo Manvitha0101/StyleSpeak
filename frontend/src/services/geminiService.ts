@@ -19,7 +19,7 @@ class GeminiService {
         throw new Error('Gemini API key not configured. Add VITE_GEMINI_API_KEY to your .env file.');
       }
       this.genAI = new GoogleGenerativeAI(API_KEY);
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      this.model = this.genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
     }
     return this.model;
   }
@@ -76,7 +76,7 @@ Return EXACTLY this JSON structure first, then a human message:
 }
 
 ---CONVERSATIONAL_RESPONSE---
-[Write a warm, expert 2-3 sentence conversational response about what you see]`;
+[Write a warm, expert 2-3 sentence conversational response about what you see. DO NOT use markdown formatting, headings, or bullet points. DO NOT repeat the JSON data.]`;
 
     const result = await model.generateContent([
       { text: prompt },
@@ -166,18 +166,40 @@ ${historyContext}
 Current message: "${message}"
 
 Behavior rules:
-- If you have enough context, give 3-5 specific recommendations with detailed reasoning
-- If you need more info, ask MAX 2 follow-up questions at a time, naturally embedded in conversation  
-- ALWAYS explain WHY each recommendation fits the user specifically
-- For Indian users: include price ranges in INR and suggest Myntra, Ajio, Nykaa Fashion, Amazon Fashion
-- Suggest 1 complete outfit combination
-- Be warm, encouraging, and expertly specific — like a knowledgeable friend who happens to be a stylist
-- Never give generic advice — always be specific and personalized
+- Your conversational response MUST be extremely short, friendly, and plain text (2-3 simple sentences max).
+- DO NOT use markdown headings (#, ##, ###), bolding (**), or bullet points (*).
+- DO NOT repeat the recommendations, prices, or outfit ideas in your conversational text! Those MUST only go into the JSON METADATA section below. The UI will render them beautifully from the JSON.
+- If you need more info, ask MAX 2 follow-up questions, naturally embedded in your short conversation.
+- Be warm and encouraging — like a knowledgeable friend.
 
 If recommendations can be made, include at the end:
 ---METADATA---
-${JSON.stringify({ recommendations: [], outfitSuggestion: {}, followUpQuestions: [], onlineSuggestions: [] })}
-(fill with actual data)`;
+{
+  "recommendations": [
+    {
+      "name": "Specific item name",
+      "description": "Short description of the item",
+      "reasoning": "Why this works for them",
+      "tags": ["tag1", "tag2"],
+      "priceRange": { "min": 1000, "max": 3000 }
+    }
+  ],
+  "outfitSuggestion": {
+    "top": "Top suggestion",
+    "bottom": "Bottom suggestion",
+    "shoes": "Shoes suggestion",
+    "accessories": ["accessory1"],
+    "jacket": "Jacket suggestion (optional)",
+    "occasion": "Best occasion for this outfit"
+  },
+  "onlineSuggestions": [
+    {
+      "platform": "Myntra",
+      "searchQuery": "exact search term",
+      "estimatedPrice": "₹X - ₹Y"
+    }
+  ]
+}`;
 
     const parts: Array<{ text: string } | { inlineData: { data: string; mimeType: string } }> = [{ text: prompt }];
     if (imageBase64 && imageMimeType) {
@@ -192,7 +214,13 @@ ${JSON.stringify({ recommendations: [], outfitSuggestion: {}, followUpQuestions:
 
     if (metadataMatch) {
       try {
-        metadata = JSON.parse(metadataMatch[1].trim()) as FashionAnalysis;
+        let jsonStr = metadataMatch[1].trim();
+        if (jsonStr.startsWith('\`\`\`json')) {
+          jsonStr = jsonStr.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
+        } else if (jsonStr.startsWith('\`\`\`')) {
+          jsonStr = jsonStr.replace(/\`\`\`/g, '').trim();
+        }
+        metadata = JSON.parse(jsonStr) as FashionAnalysis;
       } catch {
         // metadata parsing failed, continue without it
       }

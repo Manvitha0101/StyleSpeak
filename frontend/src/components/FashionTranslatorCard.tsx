@@ -3,7 +3,7 @@
  * The signature feature of StyleSpeak. Displays AI reasoning, translated fashion
  * terms with confidence, complete outfit, and shopping links. Always open — no accordions.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShoppingBag, Shirt, Sparkles, TrendingUp, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { FashionAnalysis } from '../../types';
@@ -41,6 +41,40 @@ function ConfidenceBar({ score }: { score: number }) {
   );
 }
 
+function RecommendationImage({ name }: { name: string }) {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!name) return;
+    
+    const fetchImage = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/product-image?q=${encodeURIComponent(name)}`);
+        const data = await res.json();
+        if (data.imageUrl) {
+          setImageUrl(data.imageUrl);
+        }
+      } catch (err) {
+        console.error('Failed to fetch image for:', name, err);
+      }
+    };
+    
+    fetchImage();
+  }, [name]);
+
+  if (imageUrl) {
+    return (
+      <img src={imageUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    );
+  }
+
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, rgba(168,85,247,0.15), rgba(126,34,206,0.08))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <ShoppingBag size={24} style={{ color: 'var(--primary-400)' }} />
+    </div>
+  );
+}
+
 export default function FashionTranslatorCard({ analysis, userInput }: Props) {
   const [activeTerm, setActiveTerm] = useState<string | null>(null);
 
@@ -73,9 +107,6 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
             <Sparkles size={13} color="white" />
           </div>
           <div style={{ flex: 1 }}>
-            <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--primary-400)' }}>
-              StyleSpeak Translated
-            </p>
             {analysis.season && (
               <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                 {analysis.season} · {analysis.styleCategory ?? 'Fashion'}
@@ -132,55 +163,71 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
             </div>
           )}
 
-          {/* Reasoning */}
-          {recs.length > 0 && recs[0].reasoning && (
-            <div style={{ marginBottom: '18px', background: 'var(--dark-750)', borderRadius: '12px', padding: '14px', border: '1px solid var(--dark-600)' }}>
-              <p style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', fontWeight: 600 }}>
-                AI Reasoning
-              </p>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                {recs[0].reasoning}
-              </p>
-            </div>
-          )}
 
-          {/* Top Recommendations */}
+
+          {/* Top Recommendations - Horizontal Carousel */}
           {recs.length > 0 && (
             <div style={{ marginBottom: '18px' }}>
               <p style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px', fontWeight: 600 }}>
-                Recommendations
+                Style Matches
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {recs.slice(0, 3).map((rec, i) => (
+              <div 
+                className="hide-scrollbar"
+                style={{ 
+                  display: 'flex', 
+                  gap: '12px', 
+                  overflowX: 'auto', 
+                  paddingBottom: '12px',
+                  scrollSnapType: 'x mandatory'
+                }}
+              >
+                {recs.slice(0, 6).map((rec, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + i * 0.07 }}
-                    style={{ display: 'flex', gap: '12px', background: 'var(--dark-800)', borderRadius: '12px', padding: '12px', border: '1px solid var(--dark-600)', transition: 'border-color 0.2s' }}
+                    style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      minWidth: '150px', 
+                      maxWidth: '150px',
+                      background: 'var(--dark-800)', 
+                      borderRadius: '12px', 
+                      overflow: 'hidden',
+                      border: '1px solid var(--dark-600)', 
+                      transition: 'border-color 0.2s',
+                      scrollSnapAlign: 'start'
+                    }}
                     onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(168,85,247,0.3)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--dark-600)')}
                   >
-                    {/* Image placeholder */}
-                    <div style={{ width: 52, height: 52, borderRadius: '10px', background: 'linear-gradient(135deg, rgba(168,85,247,0.15), rgba(126,34,206,0.08))', border: '1px solid rgba(168,85,247,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Shirt size={20} style={{ color: 'var(--primary-400)' }} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <p style={{ fontWeight: 600, fontSize: '13px' }}>{rec.name}</p>
-                        <span className={i === 0 ? 'match-badge' : 'match-badge match-badge-amber'}>
-                          {i === 0 ? '98%' : i === 1 ? '91%' : '84%'} match
+                    {/* Large Image visual */}
+                    <div style={{ width: '100%', height: '180px', position: 'relative' }}>
+                      <RecommendationImage name={rec.name || analysis.clothingType || 'Fashion Clothing'} />
+                      <div style={{ position: 'absolute', top: 8, right: 8 }}>
+                        <span className={i === 0 ? 'match-badge' : 'match-badge match-badge-amber'} style={{ backdropFilter: 'blur(4px)', background: i === 0 ? 'rgba(34,197,94,0.9)' : 'rgba(245,158,11,0.9)', color: 'white', border: 'none' }}>
+                          {i === 0 ? '98%' : i === 1 ? '91%' : i === 2 ? '84%' : '79%'}
                         </span>
                       </div>
-                      <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '6px' }}>{rec.description}</p>
-                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                        {rec.tags?.slice(0, 3).map((t, j) => <span key={j} className="tag" style={{ fontSize: '10px', padding: '2px 8px' }}>{t}</span>)}
-                        {rec.priceRange && (
-                          <span className="tag-accent" style={{ fontSize: '10px', padding: '2px 8px' }}>
-                            ₹{rec.priceRange.min.toLocaleString()}+
+                    </div>
+                    
+                    {/* Text Content */}
+                    <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <p style={{ fontWeight: 600, fontSize: '12px', lineHeight: 1.3, marginBottom: '4px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {rec.name || 'Style Recommendation'}
+                      </p>
+                      <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '8px', flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {rec.description || 'A perfect match for this style profile.'}
+                      </p>
+                      
+                      {rec.priceRange && (
+                        <div style={{ marginTop: 'auto' }}>
+                          <span className="tag-accent" style={{ fontSize: '10px', padding: '2px 6px', width: 'fit-content' }}>
+                            ₹{rec.priceRange.min.toLocaleString()}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 ))}

@@ -200,12 +200,7 @@ export default function LandingPage() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link to="/selfie" style={{ fontSize: '13px', color: 'var(--text-muted)', textDecoration: 'none', padding: '8px 14px', borderRadius: '8px', transition: 'color 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
-          >
-            AI Labs ↗
-          </Link>
+
           <Link to="/chat" className="btn-primary" style={{ padding: '9px 20px', fontSize: '13px' }}>
             Start Translating <ArrowRight size={13} />
           </Link>
@@ -224,12 +219,7 @@ export default function LandingPage() {
           transition={{ duration: 0.6 }}
           style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}
         >
-          {/* Badge */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ marginBottom: '28px' }}>
-            <span className="tag" style={{ fontSize: '12px', padding: '5px 14px' }}>
-              <Sparkles size={11} /> AI Fashion Translator · FlowZint Hackathon 2026
-            </span>
-          </motion.div>
+
 
           {/* Headline */}
           <motion.h1
@@ -268,70 +258,7 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* Social proof strip */}
-      <div style={{ borderTop: '1px solid var(--dark-600)', borderBottom: '1px solid var(--dark-600)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
-        {[
-          { stat: '10,000+', label: 'fashion terms understood' },
-          { stat: 'Multi-modal', label: 'text · image · voice' },
-          { stat: 'Gemini AI', label: 'powered reasoning' },
-          { stat: 'Indian market', label: 'prices in INR' },
-        ].map(({ stat, label }) => (
-          <div key={stat} style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>{stat}</p>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{label}</p>
-          </div>
-        ))}
-      </div>
 
-      {/* How it works */}
-      <section style={{ padding: '80px 40px', maxWidth: '900px', margin: '0 auto' }}>
-        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', textAlign: 'center', marginBottom: '48px' }}>
-          How StyleSpeak works
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: '16px' }}>
-          {[
-            { step: '01', title: 'Speak your way', desc: 'Say "that hoodie from Stranger Things" or "loose shirt with big sleeves" — any way you describe it.', color: '#a855f7' },
-            { step: '02', title: 'AI translates', desc: 'StyleSpeak converts your words into precise fashion terms: Drop Shoulder, Relaxed Fit, Korean Casual.', color: '#7c3aed' },
-            { step: '03', title: 'Understand why', desc: 'Every recommendation comes with reasoning, confidence scores, and a fashion dictionary entry.', color: '#6d28d9' },
-            { step: '04', title: 'Shop complete outfits', desc: 'Get full outfit combinations with price ranges and links to Myntra, Ajio, and Amazon Fashion.', color: '#5b21b6' },
-          ].map(({ step, title, desc, color }) => (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: Number(step) * 0.08 }}
-              style={{ background: 'var(--dark-800)', border: '1px solid var(--dark-600)', borderRadius: '18px', padding: '24px' }}
-            >
-              <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '32px', fontWeight: 700, color: `${color}40`, marginBottom: '12px' }}>{step}</div>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>{title}</h3>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>{desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{ padding: '80px 40px', textAlign: 'center' }}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          style={{ maxWidth: '600px', margin: '0 auto', background: 'var(--dark-800)', border: '1px solid var(--dark-600)', borderRadius: '28px', padding: '56px 40px', position: 'relative', overflow: 'hidden' }}
-          className="animate-pulse-glow"
-        >
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at top, rgba(168,85,247,0.09) 0%, transparent 70%)', pointerEvents: 'none' }} />
-          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', marginBottom: '14px', position: 'relative' }}>
-            Start speaking fashion.
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: '32px', position: 'relative' }}>
-            No fashion vocabulary needed. Just say it in your words.
-          </p>
-          <Link to="/chat" className="btn-primary" style={{ padding: '14px 36px', fontSize: '15px', position: 'relative' }}>
-            <Sparkles size={16} /> Start Translating Free
-          </Link>
-        </motion.div>
-      </section>
 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid var(--dark-600)', padding: '28px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
@@ -339,10 +266,8 @@ export default function LandingPage() {
           <LogoMark size={24} />
           <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '15px', color: 'var(--text-secondary)' }}>StyleSpeak</span>
         </div>
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>FlowZint AI Hackathon 2026 · Open Innovation · Powered by Gemini</p>
-        <Link to="/selfie" style={{ fontSize: '12px', color: 'var(--text-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <BookOpen size={12} /> AI Labs
-        </Link>
+
+
       </footer>
     </div>
   );

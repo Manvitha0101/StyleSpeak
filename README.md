@@ -96,7 +96,7 @@ The gap is not a search problem. It's a **translation problem**.
 ### AI & APIs
 | Service | Usage |
 |---|---|
-| Gemini 1.5 Flash | Fashion translation, outfit generation, term explanation |
+| Gemini 3.5 Flash | Fashion translation, outfit generation, term explanation |
 | Gemini Vision | Clothing image analysis |
 | Web Speech API | Browser-native voice recognition |
 
@@ -132,7 +132,7 @@ The gap is not a search problem. It's a **translation problem**.
                                 ▼
                     ┌───────────────────────┐
                     │   Google Gemini API   │
-                    │   (gemini-1.5-flash)  │
+                    │   (gemini-3.5-flash)  │
                     └───────────────────────┘
 ```
 
@@ -154,7 +154,7 @@ User Input (text / image / voice)
   (structured prompts with JSON schema)
          │
          ▼
-  Gemini 1.5 Flash
+  Gemini 3.5 Flash
          │
          ▼
   Response Parser

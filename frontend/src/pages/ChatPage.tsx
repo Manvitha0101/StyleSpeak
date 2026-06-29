@@ -258,7 +258,7 @@ export default function ChatPage() {
           </div>
           <div style={{ flex: 1 }}>
             <p style={{ fontWeight: 600, fontSize: '14px' }}>{conversation?.title ?? 'Style Session'}</p>
-            <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>AI Fashion Translator · Powered by Gemini</p>
+            <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>AI Fashion Translator</p>
           </div>
         </div>
 
@@ -287,23 +287,7 @@ export default function ChatPage() {
               <p style={{ color: 'var(--text-secondary)', marginBottom: '12px', fontSize: '14px' }}>
                 Say it in your words. StyleSpeak speaks fashion.
               </p>
-              {/* Demo exchange */}
-              <div style={{ background: 'var(--dark-800)', border: '1px solid var(--dark-600)', borderRadius: '16px', padding: '16px', marginBottom: '28px', textAlign: 'left' }}>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', alignItems: 'flex-start' }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '8px', background: 'linear-gradient(135deg,#a855f7,#7e22ce)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: '11px' }}>👤</span>
-                  </div>
-                  <div style={{ background: 'linear-gradient(135deg,#a855f7,#7e22ce)', borderRadius: '4px 12px 12px 12px', padding: '9px 13px', fontSize: '13px' }}>
-                    "I want the loose shirt with big sleeves that Korean actors wear"
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                  <LogoMark size={28} />
-                  <div style={{ background: 'var(--dark-700)', border: '1px solid var(--dark-600)', borderRadius: '4px 12px 12px 12px', padding: '9px 13px', fontSize: '13px', lineHeight: 1.6 }}>
-                    <span style={{ color: 'var(--primary-400)', fontWeight: 600 }}>Translated:</span> Drop Shoulder · Relaxed Fit · Camp Collar · Korean Casual ✦ With confidence scores, outfit suggestions, and shopping links.
-                  </div>
-                </div>
-              </div>
+
               {/* Starter chips */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
                 {QUICK_STARTERS.map((s, i) => (
