@@ -49,7 +49,8 @@ function RecommendationImage({ name }: { name: string }) {
     
     const fetchImage = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/product-image?q=${encodeURIComponent(name)}`);
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        const res = await fetch(`${baseUrl}/api/product-image?q=${encodeURIComponent(name)}`);
         const data = await res.json();
         if (data.imageUrl) {
           setImageUrl(data.imageUrl);
