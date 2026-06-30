@@ -205,11 +205,6 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
                     {/* Large Image visual */}
                     <div style={{ width: '100%', height: '180px', position: 'relative' }}>
                       <RecommendationImage name={rec.name || analysis.clothingType || 'Fashion Clothing'} />
-                      <div style={{ position: 'absolute', top: 8, right: 8 }}>
-                        <span className={i === 0 ? 'match-badge' : 'match-badge match-badge-amber'} style={{ backdropFilter: 'blur(4px)', background: i === 0 ? 'rgba(34,197,94,0.9)' : 'rgba(245,158,11,0.9)', color: 'white', border: 'none' }}>
-                          {i === 0 ? '98%' : i === 1 ? '91%' : i === 2 ? '84%' : '79%'}
-                        </span>
-                      </div>
                     </div>
                     
                     {/* Text Content */}

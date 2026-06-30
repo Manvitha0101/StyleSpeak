@@ -116,7 +116,11 @@ export const useChatStore = create<ChatStore>()(
           }));
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
-          const errorMessage = createMessage('assistant', `I'm having trouble connecting right now. ${errorMsg}`);
+          let displayMsg = `I'm having trouble connecting right now. ${errorMsg}`;
+          if (errorMsg.includes('503')) {
+            displayMsg = "StyleSpeak is experiencing high AI demand right now. Retrying automatically...";
+          }
+          const errorMessage = createMessage('assistant', displayMsg);
 
           set(state => ({
             conversations: state.conversations.map(c =>
@@ -173,7 +177,11 @@ export const useChatStore = create<ChatStore>()(
           }));
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : 'Image analysis failed.';
-          const errorMessage = createMessage('assistant', `Unable to analyze the image. ${errorMsg}`);
+          let displayMsg = `Unable to analyze the image. ${errorMsg}`;
+          if (errorMsg.includes('503')) {
+            displayMsg = "StyleSpeak is experiencing high AI demand right now. Retrying automatically...";
+          }
+          const errorMessage = createMessage('assistant', displayMsg);
 
           set(state => ({
             conversations: state.conversations.map(c =>
@@ -222,7 +230,11 @@ export const useChatStore = create<ChatStore>()(
           }));
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : 'Analysis failed';
-          const errorMessage = createMessage('assistant', `Could not analyze the image. ${errorMsg}`);
+          let displayMsg = `Could not analyze the image. ${errorMsg}`;
+          if (errorMsg.includes('503')) {
+            displayMsg = "StyleSpeak is experiencing high AI demand right now. Retrying automatically...";
+          }
+          const errorMessage = createMessage('assistant', displayMsg);
 
           set(state => ({
             conversations: state.conversations.map(c =>

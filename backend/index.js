@@ -9,7 +9,9 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
 
-// Image search route using a custom lightweight scraper
+const google = require('googlethis');
+
+// Image search route using googlethis
 app.get('/api/product-image', async (req, res) => {
   const query = req.query.q;
   if (!query) {
@@ -17,19 +19,10 @@ app.get('/api/product-image', async (req, res) => {
   }
 
   try {
-    // Make a request to Bing Images
-    const searchUrl = `https://www.bing.com/images/search?q=${encodeURIComponent(query + ' fashion clothing outfit product')}`;
-    const response = await axios.get(searchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
-      }
-    });
-
-    // Extract high-quality image URL from the DOM (strictly jpg/png to avoid icons/maps)
-    const matches = response.data.match(/murl&quot;:&quot;(http.*?(?:jpg|jpeg|png))&quot;/i);
+    const images = await google.image(query + ' clothing', { safe: true });
     
-    if (matches && matches[1]) {
-      return res.json({ imageUrl: matches[1] });
+    if (images && images.length > 0) {
+      return res.json({ imageUrl: images[0].url });
     } else {
       return res.status(404).json({ error: 'Image not found', imageUrl: null });
     }

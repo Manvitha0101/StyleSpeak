@@ -17,6 +17,7 @@
     "duckduckgo-images-api": "^1.0.5",
     "express": "^5.2.1",
     "g-i-s": "^2.1.7",
-    "google-sr": "^6.0.0"
+    "google-sr": "^6.0.0",
+    "googlethis": "^1.8.0"
   }
 }

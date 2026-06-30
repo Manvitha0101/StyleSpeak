@@ -80,7 +80,6 @@ function TranslationDemo() {
       {/* Top bar */}
       <div style={{ background: 'var(--dark-750)', borderBottom: '1px solid var(--dark-600)', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
         {[0,1,2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: ['#ef4444','#f59e0b','#22c55e'][i] }} />)}
-        <span style={{ marginLeft: 8, fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>StyleSpeak — Live Translation</span>
       </div>
 
       <div style={{ padding: '20px', display: 'flex', gap: '16px', alignItems: 'flex-start', minHeight: 130 }}>
@@ -202,7 +201,7 @@ export default function LandingPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
           <Link to="/chat" className="btn-primary" style={{ padding: '9px 20px', fontSize: '13px' }}>
-            Start Translating <ArrowRight size={13} />
+            Try StyleSpeak <ArrowRight size={13} />
           </Link>
         </div>
       </nav>

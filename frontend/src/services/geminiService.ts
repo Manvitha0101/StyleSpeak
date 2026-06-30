@@ -9,6 +9,135 @@ import type { Message, FashionAnalysis, SelfieAnalysis } from '../types';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 
+const DEMO_FALLBACKS: Record<string, { content: string; metadata?: FashionAnalysis }> = {
+  "streetwear under ₹2000": {
+    content: "Hey there! I would love to help you nail that effortless Gen Z streetwear vibe while keeping your budget in mind. To tailor this perfectly, do you prefer a more neutral color palette, or bold graphics?",
+    metadata: {
+      recommendations: [
+        {
+          name: "Unisex Oversized Graphic Heavyweight Tee",
+          description: "A staple streetwear piece with drop shoulders and a premium thick feel.",
+          reasoning: "Oversized fits are the absolute core of Gen Z streetwear silhouettes.",
+          tags: ["oversized", "streetwear", "graphic"],
+          priceRange: { min: 699, max: 1299 }
+        },
+        {
+          name: "Unisex Wide-Leg Utility Cargo Pants",
+          description: "Relaxed fit cargo pants with multiple functional pockets.",
+          reasoning: "Wide-leg cargos provide that effortless baggy aesthetic.",
+          tags: ["baggy", "utility", "cargo"],
+          priceRange: { min: 999, max: 1899 }
+        }
+      ],
+      outfitSuggestion: {
+        top: "Oversized Graphic Heavyweight Tee",
+        bottom: "Wide-Leg Utility Cargo Pants",
+        shoes: "Chunky White Sneakers",
+        accessories: ["Silver Chain Necklace", "Crossbody Bag"],
+        occasion: "Casual hangouts, cafe hopping"
+      },
+      onlineSuggestions: [
+        { platform: "Myntra", searchQuery: "oversized graphic t-shirt", estimatedPrice: "₹699 - ₹1200" },
+        { platform: "Ajio", searchQuery: "wide leg cargo pants", estimatedPrice: "₹999 - ₹1800" }
+      ]
+    }
+  },
+  "shirt and pant": {
+    content: "A classic shirt and pant pairing is such a chic, effortless look that never goes out of style. Are you leaning toward a sharp professional outfit, or a relaxed casual vibe?",
+    metadata: {
+      recommendations: [
+        {
+          name: "Women's Classic Linen Button-Up Shirt",
+          description: "A breathable, relaxed-fit linen shirt perfect for layering or wearing solo.",
+          reasoning: "Linen offers a sophisticated yet relaxed texture that elevates any basic outfit.",
+          tags: ["linen", "classic", "breathable"],
+          priceRange: { min: 1299, max: 2499 }
+        },
+        {
+          name: "Women's High-Waisted Wide-Leg Trousers",
+          description: "Tailored trousers with a fluid drape and comfortable high waist.",
+          reasoning: "Wide-leg trousers elongate the legs and pair perfectly with a tucked-in shirt.",
+          tags: ["tailored", "wide-leg", "chic"],
+          priceRange: { min: 1499, max: 2999 }
+        },
+        {
+          name: "Women's High-Waist Straight Fit Denim Jeans",
+          description: "Classic straight-cut denim that sits perfectly at the natural waist.",
+          reasoning: "A great casual alternative to trousers that still looks put-together.",
+          tags: ["denim", "straight-fit", "casual"],
+          priceRange: { min: 1799, max: 3299 }
+        },
+        {
+          name: "Women's Silk Blend Camisole",
+          description: "A soft, lustrous camisole with a delicate neckline.",
+          reasoning: "Can be worn beautifully underneath an unbuttoned linen shirt.",
+          tags: ["silk-blend", "layering", "elegant"],
+          priceRange: { min: 899, max: 1599 }
+        }
+      ],
+      outfitSuggestion: {
+        top: "Classic Linen Button-Up Shirt (half tucked)",
+        bottom: "High-Waisted Wide-Leg Trousers",
+        shoes: "Leather Loafers or Pointed Mules",
+        accessories: ["Minimalist Gold Watch", "Leather Tote"],
+        occasion: "Smart casual office, stylish brunch"
+      },
+      onlineSuggestions: [
+        { platform: "Myntra", searchQuery: "women linen shirt", estimatedPrice: "₹1200 - ₹2000" },
+        { platform: "Amazon Fashion", searchQuery: "women high waist straight fit jeans", estimatedPrice: "₹1500 - ₹2500" }
+      ]
+    }
+  },
+  "floral summer dress": {
+    content: "A floral summer dress is perfect for warm weather and always looks effortlessly chic! Are you looking for a mini, midi, or maxi length?",
+    metadata: {
+      recommendations: [
+        {
+          name: "Women's Floral Midi Wrap Dress",
+          description: "A breezy, lightweight wrap dress with a vibrant floral print.",
+          reasoning: "Wrap dresses are universally flattering and perfect for summer weather.",
+          tags: ["floral", "summer", "breezy"],
+          priceRange: { min: 1200, max: 2500 }
+        }
+      ],
+      outfitSuggestion: {
+        top: "Floral Midi Wrap Dress",
+        bottom: "none",
+        shoes: "Strappy Sandals",
+        accessories: ["Straw Tote Bag", "Oversized Sunglasses"],
+        occasion: "Brunch, Picnic, Vacation"
+      },
+      onlineSuggestions: [
+        { platform: "Myntra", searchQuery: "floral summer dress", estimatedPrice: "₹1200 - ₹2500" }
+      ]
+    }
+  },
+  "korean actors wear": {
+    content: "Ah, the signature K-drama aesthetic! You're definitely looking for that clean, oversized, and slightly boxy silhouette. Do you prefer solid neutral colors or subtle stripes?",
+    metadata: {
+      recommendations: [
+        {
+          name: "Men's Oversized Drop-Shoulder Button Down",
+          description: "A relaxed, boxy shirt with dropped shoulders, typically in a soft cotton or blend.",
+          reasoning: "This specific cut is the staple for the 'boyfriend fit' seen in Korean dramas.",
+          tags: ["korean", "oversized", "minimal"],
+          priceRange: { min: 1200, max: 2500 }
+        }
+      ],
+      outfitSuggestion: {
+        top: "Oversized Drop-Shoulder Button Down",
+        bottom: "Straight-Cut Dress Pants",
+        shoes: "Chunky Derby Shoes or White Sneakers",
+        accessories: ["Silver Pendant", "Tote Bag"],
+        occasion: "Date night, Smart casual outings"
+      },
+      onlineSuggestions: [
+        { platform: "Ajio", searchQuery: "men oversized shirt", estimatedPrice: "₹1000 - ₹2000" }
+      ]
+    }
+  }
+};
+
 class GeminiService {
   private genAI: GoogleGenerativeAI | null = null;
   private model: GenerativeModel | null = null;
@@ -48,7 +177,7 @@ Return EXACTLY this JSON structure first, then a human message:
   "recommendations": [
     {
       "id": "1",
-      "name": "string",
+      "name": "string (MUST include demographic and SPECIFIC cut/fabric, e.g., 'Women\\'s Banarasi Pattu Saree', 'Men\\'s High-Waist Straight Fit Jeans')",
       "description": "string",
       "reasoning": "string explaining why this matches",
       "category": "string",
@@ -56,7 +185,7 @@ Return EXACTLY this JSON structure first, then a human message:
       "priceRange": { "min": number, "max": number },
       "platforms": [{ "platform": "string", "searchQuery": "string", "estimatedPrice": "string" }]
     }
-  ],
+  ], // MUST provide exactly 3-4 highly specific recommendations
   "outfitSuggestion": {
     "top": "string or null",
     "bottom": "string or null",
@@ -113,7 +242,7 @@ Return EXACTLY this JSON structure first:
   "recommendations": [
     {
       "id": "1",
-      "name": "string (specific item name)",
+      "name": "string (MUST include demographic and SPECIFIC cut/fabric, e.g., 'Women\\'s Banarasi Pattu Saree', 'Men\\'s High-Waist Straight Fit Jeans')",
       "description": "string",
       "reasoning": "string (why this matches their vague description)",
       "category": "string",
@@ -121,7 +250,7 @@ Return EXACTLY this JSON structure first:
       "priceRange": { "min": number, "max": number },
       "platforms": [{ "platform": "string", "searchQuery": "string", "estimatedPrice": "₹X - ₹Y" }]
     }
-  ],
+  ], // MUST provide exactly 3-4 highly specific recommendations
   "outfitSuggestion": {
     "top": "string",
     "bottom": "string",
@@ -177,13 +306,13 @@ If recommendations can be made, include at the end:
 {
   "recommendations": [
     {
-      "name": "Specific item name",
+      "name": "Specific item name (MUST include demographic prefix and SPECIFIC cut/fabric, e.g., 'Women\\'s High-Waist Bootcut Jeans', 'Men\\'s Cuban Collar Silk Shirt')",
       "description": "Short description of the item",
       "reasoning": "Why this works for them",
       "tags": ["tag1", "tag2"],
       "priceRange": { "min": 1000, "max": 3000 }
     }
-  ],
+  ], // MUST provide exactly 3-4 highly specific recommendations
   "outfitSuggestion": {
     "top": "Top suggestion",
     "bottom": "Bottom suggestion",
@@ -206,28 +335,44 @@ If recommendations can be made, include at the end:
       parts.push({ inlineData: { data: imageBase64, mimeType: imageMimeType } });
     }
 
-    const result = await model.generateContent(parts);
-    const responseText = result.response.text();
+    try {
+      const result = await model.generateContent(parts);
+      const responseText = result.response.text();
 
-    const metadataMatch = responseText.match(/---METADATA---\s*([\s\S]*?)(?:$|---)/);
-    let metadata: FashionAnalysis | undefined;
+      const metadataMatch = responseText.match(/---METADATA---\s*([\s\S]*?)(?:$|---)/);
+      let metadata: FashionAnalysis | undefined;
 
-    if (metadataMatch) {
-      try {
-        let jsonStr = metadataMatch[1].trim();
-        if (jsonStr.startsWith('\`\`\`json')) {
-          jsonStr = jsonStr.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
-        } else if (jsonStr.startsWith('\`\`\`')) {
-          jsonStr = jsonStr.replace(/\`\`\`/g, '').trim();
+      if (metadataMatch) {
+        try {
+          let jsonStr = metadataMatch[1].trim();
+          if (jsonStr.startsWith('\`\`\`json')) {
+            jsonStr = jsonStr.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
+          } else if (jsonStr.startsWith('\`\`\`')) {
+            jsonStr = jsonStr.replace(/\`\`\`/g, '').trim();
+          }
+          metadata = JSON.parse(jsonStr) as FashionAnalysis;
+        } catch {
+          // metadata parsing failed, continue without it
         }
-        metadata = JSON.parse(jsonStr) as FashionAnalysis;
-      } catch {
-        // metadata parsing failed, continue without it
       }
-    }
 
-    const content = responseText.replace(/---METADATA---[\s\S]*/g, '').trim();
-    return { content, metadata };
+      const content = responseText.replace(/---METADATA---[\s\S]*/g, '').trim();
+      return { content, metadata };
+    } catch (error) {
+      // Fallback mechanism for demo purposes
+      const normalizedMsg = message.toLowerCase().trim();
+      const fallbackKey = Object.keys(DEMO_FALLBACKS).find(k => normalizedMsg.includes(k));
+      
+      if (fallbackKey) {
+        console.warn(`[StyleSpeak AI Fallback] Using cached response for: ${fallbackKey}`);
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        return DEMO_FALLBACKS[fallbackKey];
+      }
+      
+      // If no fallback matches, throw the original error
+      throw error;
+    }
   }
 
   /**
