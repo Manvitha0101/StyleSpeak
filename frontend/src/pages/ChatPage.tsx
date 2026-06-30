@@ -319,7 +319,6 @@ export default function ChatPage() {
           {/* Empty state */}
           {messages.length === 0 && (
             <div style={{ textAlign: 'center', paddingTop: '48px', maxWidth: '560px', margin: '0 auto' }}>
-              <LogoMark size={48} />
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '26px', marginTop: '16px', marginBottom: '8px' }}>
                 What would you like to translate?
               </h2>
