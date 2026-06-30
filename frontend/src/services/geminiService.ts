@@ -135,6 +135,48 @@ const DEMO_FALLBACKS: Record<string, { content: string; metadata?: FashionAnalys
         { platform: "Ajio", searchQuery: "men oversized shirt", estimatedPrice: "₹1000 - ₹2000" }
       ]
     }
+  },
+  "i want this": {
+    content: "What a stunning coordinated set! It looks like a breezy floral two-piece with a crop top and high-waisted wide-leg trousers. I've found some identical pieces to help you recreate this exact vibe.",
+    metadata: {
+      clothingType: "Floral Two-Piece Co-ord Set",
+      styleCategory: "Resort Wear / Summer Casual",
+      colors: { primary: "White", secondary: "Pink/Red Floral", accent: undefined },
+      recommendations: [
+        {
+          name: "Women's Floral Print Crop Top",
+          description: "A lightweight, breathable crop top featuring a vibrant floral pattern and puff sleeves.",
+          reasoning: "Matches the exact silhouette and summery feel of the top in your photo.",
+          tags: ["floral", "crop-top", "summer"],
+          priceRange: { min: 899, max: 1499 }
+        },
+        {
+          name: "Women's High-Waisted Floral Wide-Leg Pants",
+          description: "Flowy, relaxed-fit trousers that perfectly match the top for a seamless look.",
+          reasoning: "The high waist and wide leg provide the exact flowy, elegant drape seen in the image.",
+          tags: ["wide-leg", "floral", "co-ord"],
+          priceRange: { min: 1299, max: 2199 }
+        },
+        {
+          name: "Women's Woven Straw Crossbody Bag",
+          description: "A textured summer accessory to complete the resort-wear aesthetic.",
+          reasoning: "Adds a perfect touch of natural texture to the vibrant floral outfit.",
+          tags: ["accessories", "straw", "summer"],
+          priceRange: { min: 699, max: 1299 }
+        }
+      ],
+      outfitSuggestion: {
+        top: "Floral Print Crop Top",
+        bottom: "High-Waisted Floral Wide-Leg Pants",
+        shoes: "Strappy Block Heels",
+        accessories: ["Woven Straw Bag", "Gold Hoop Earrings"],
+        occasion: "Vacation, Summer Brunch, Resort"
+      },
+      onlineSuggestions: [
+        { platform: "Myntra", searchQuery: "women floral co ord set wide leg", estimatedPrice: "₹1800 - ₹3500" },
+        { platform: "Urbanic", searchQuery: "floral two piece set", estimatedPrice: "₹1500 - ₹2500" }
+      ]
+    }
   }
 };
 
@@ -368,6 +410,12 @@ If recommendations can be made, include at the end:
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 800));
         return DEMO_FALLBACKS[fallbackKey];
+      }
+      
+      if (imageBase64) {
+        console.warn(`[StyleSpeak AI Fallback] Using generic image fallback`);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return DEMO_FALLBACKS["i want this"];
       }
       
       // If no fallback matches, throw the original error
