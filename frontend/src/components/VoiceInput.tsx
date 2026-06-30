@@ -15,8 +15,8 @@ interface Props {
 // Type shim for Web Speech API
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
   }
 }
 
@@ -24,7 +24,7 @@ export default function VoiceInput({ onTranscript, disabled }: Props) {
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(true);
   const [interim, setInterim] = useState('');
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any | null>(null);
 
   useEffect(() => {
     const SpeechRec = window.SpeechRecognition ?? window.webkitSpeechRecognition;
@@ -39,7 +39,7 @@ export default function VoiceInput({ onTranscript, disabled }: Props) {
     recognition.onend = () => { setListening(false); setInterim(''); };
     recognition.onerror = () => { setListening(false); setInterim(''); };
 
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
+    recognition.onresult = (e: any) => {
       let interim = '';
       let final = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {

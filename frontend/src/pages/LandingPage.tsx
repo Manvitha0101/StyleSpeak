@@ -6,8 +6,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mic, ImagePlus, MessageSquare, ArrowRight, Sparkles, BookOpen } from 'lucide-react';
-import VoiceInput from '../components/VoiceInput';
+import { Mic, ImagePlus, MessageSquare, ArrowRight } from 'lucide-react';
 import { useChatStore } from '../store/chatStore';
 
 /* ── Logo mark ── */

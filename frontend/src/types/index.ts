@@ -29,11 +29,11 @@ export interface FashionAnalysis {
 }
 
 export interface FashionRecommendation {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   reasoning: string;
-  category: string;
+  category?: string;
   tags: string[];
   priceRange?: { min: number; max: number };
   platforms?: OnlineSuggestion[];

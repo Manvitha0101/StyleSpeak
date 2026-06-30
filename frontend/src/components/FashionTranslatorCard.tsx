@@ -4,17 +4,15 @@
  * terms with confidence, complete outfit, and shopping links. Always open — no accordions.
  */
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Shirt, Sparkles, TrendingUp, Info } from 'lucide-react';
+import { ShoppingBag, Sparkles, TrendingUp, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { FashionAnalysis } from '../../types';
+import type { FashionAnalysis, FashionRecommendation } from '../types';
 import FashionTermModal from './FashionTermModal';
 
 interface Props {
   analysis: FashionAnalysis;
   userInput?: string;
 }
-
-const TERM_CONFIDENCE: Record<string, number> = {};
 
 function TermPill({ term, onDefine }: { term: string; onDefine: (t: string) => void }) {
   return (
@@ -182,7 +180,7 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
                   scrollSnapType: 'x mandatory'
                 }}
               >
-                {recs.slice(0, 6).map((rec, i) => (
+                {recs.slice(0, 6).map((rec: FashionRecommendation, i: number) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, x: 20 }}
@@ -269,7 +267,7 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
                 Shop Online
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {online.map((s, i) => (
+                {online.map((s: any, i: number) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--dark-750)', borderRadius: '10px', padding: '10px 14px', border: '1px solid var(--dark-600)' }}>
                     <div>
                       <p style={{ fontSize: '13px', fontWeight: 600 }}>{s.platform}</p>

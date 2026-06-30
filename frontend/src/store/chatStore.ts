@@ -5,7 +5,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Message, Conversation, FashionAnalysis, UserPreferences } from '../types';
+import type { Message, Conversation, UserPreferences } from '../types';
 import { geminiService } from '../services/geminiService';
 
 interface ChatStore {
@@ -79,7 +79,7 @@ export const useChatStore = create<ChatStore>()(
       },
 
       sendTextMessage: async (text) => {
-        const { createConversation, getActiveConversation, preferences } = get();
+        const { createConversation, getActiveConversation } = get();
 
         // Ensure active conversation
         if (!get().activeConversationId) createConversation();
