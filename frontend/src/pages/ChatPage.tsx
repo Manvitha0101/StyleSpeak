@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Send, ImagePlus, Plus, Trash2, X, ArrowLeft, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Send, ImagePlus, Plus, Trash2, X, ArrowLeft, Sparkles, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import { useChatStore } from '../store/chatStore';
 import type { Message } from '../types';
 import FashionTranslatorCard from '../components/FashionTranslatorCard';
@@ -126,14 +126,26 @@ function MessageBubble({ message }: { message: Message }) {
 }
 
 /* ─── Slim collapsible sidebar ─── */
-function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+function Sidebar({ collapsed, onToggle, isMobile }: { collapsed: boolean; onToggle: () => void; isMobile: boolean }) {
   const { conversations, activeConversationId, setActiveConversation, createConversation, deleteConversation } = useChatStore();
 
   return (
     <motion.div
-      animate={{ width: collapsed ? 56 : 240 }}
+      animate={{ width: collapsed ? (isMobile ? 0 : 56) : 240 }}
       transition={{ duration: 0.25, ease: 'easeInOut' }}
-      style={{ background: 'var(--dark-800)', borderRight: '1px solid var(--dark-600)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', flexShrink: 0 }}
+      style={{ 
+        background: 'var(--dark-800)', 
+        borderRight: '1px solid var(--dark-600)', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        height: '100%', 
+        overflow: 'hidden', 
+        flexShrink: 0,
+        position: isMobile ? 'absolute' : 'relative',
+        zIndex: isMobile ? 50 : 1,
+        left: 0,
+        top: 0
+      }}
     >
       {/* Top */}
       <div style={{ padding: '14px', borderBottom: '1px solid var(--dark-600)', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', gap: '8px' }}>
@@ -197,11 +209,22 @@ export default function ChatPage() {
   const { getActiveConversation, sendTextMessage, sendImageMessage, isLoading, createConversation, activeConversationId } = useChatStore();
   const [input, setInput] = useState('');
   const [previewImage, setPreviewImage] = useState<{ base64: string; mimeType: string; url: string } | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const [dragOver, setDragOver] = useState(false);
   const [searchParams] = useSearchParams();
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile && !isMobile) setSidebarCollapsed(true);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile]);
 
   const conversation = getActiveConversation();
   const messages = conversation?.messages ?? [];
@@ -245,14 +268,30 @@ export default function ChatPage() {
   const handleStarter = (s: string) => { setInput(s); };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: 'var(--dark-900)', overflow: 'hidden' }}>
-      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(p => !p)} />
+    <div style={{ display: 'flex', height: '100vh', background: 'var(--dark-900)', overflow: 'hidden', position: 'relative' }}>
+      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(p => !p)} isMobile={isMobile} />
+
+      {/* Mobile overlay backdrop */}
+      {isMobile && !sidebarCollapsed && (
+        <div 
+          onClick={() => setSidebarCollapsed(true)}
+          style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40 }} 
+        />
+      )}
 
       {/* Main area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
 
         {/* Chat header */}
         <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--dark-600)', display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--dark-800)', flexShrink: 0 }}>
+          {isMobile && (
+            <button 
+              onClick={() => setSidebarCollapsed(false)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: '4px', marginRight: '4px' }}
+            >
+              <Menu size={20} />
+            </button>
+          )}
           <div style={{ width: 34, height: 34, borderRadius: '10px', background: 'linear-gradient(135deg,#a855f7,#7e22ce)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Sparkles size={15} color="white" />
           </div>
