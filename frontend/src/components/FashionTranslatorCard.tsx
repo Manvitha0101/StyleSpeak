@@ -4,7 +4,7 @@
  * terms with confidence, complete outfit, and shopping links. Always open — no accordions.
  */
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Sparkles, TrendingUp, Info } from 'lucide-react';
+import { ShoppingBag, Sparkles, TrendingUp, Info, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { FashionAnalysis, FashionRecommendation } from '../types';
 import FashionTermModal from './FashionTermModal';
@@ -76,6 +76,17 @@ function RecommendationImage({ name }: { name: string }) {
 
 export default function FashionTranslatorCard({ analysis, userInput }: Props) {
   const [activeTerm, setActiveTerm] = useState<string | null>(null);
+
+  const getShopUrl = (platform: string, query: string) => {
+    const p = platform.toLowerCase();
+    const q = encodeURIComponent(query);
+    if (p.includes('myntra')) return `https://www.myntra.com/${query.replace(/ /g, '-')}`;
+    if (p.includes('ajio')) return `https://www.ajio.com/search/?text=${q}`;
+    if (p.includes('urbanic')) return `https://in.urbanic.com/search?keyword=${q}`;
+    if (p.includes('zara')) return `https://www.zara.com/in/en/search?searchTerm=${q}`;
+    if (p.includes('h&m') || p.includes('hm')) return `https://www2.hm.com/en_in/search-results.html?q=${q}`;
+    return `https://www.google.com/search?tbm=shop&q=${q}`;
+  };
 
   const terms: Array<{ term: string; score: number }> = [
     analysis.clothingType && { term: analysis.clothingType, score: 97 },
@@ -267,18 +278,27 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
                 Shop Online
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {online.map((s: any, i: number) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--dark-750)', borderRadius: '10px', padding: '10px 14px', border: '1px solid var(--dark-600)' }}>
-                    <div>
-                      <p style={{ fontSize: '13px', fontWeight: 600 }}>{s.platform}</p>
-                      <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Search: "{s.searchQuery}"</p>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {s.estimatedPrice && <span className="tag-accent" style={{ fontSize: '11px' }}>{s.estimatedPrice}</span>}
-                      <ShoppingBag size={13} style={{ color: 'var(--text-muted)' }} />
-                    </div>
-                  </div>
-                ))}
+                {online.map((s: any, i: number) => {
+                  const url = s.url || getShopUrl(s.platform, s.searchQuery);
+                  return (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div 
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--dark-750)', borderRadius: '10px', padding: '10px 14px', border: '1px solid var(--dark-600)', transition: 'border-color 0.2s', cursor: 'pointer' }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(168,85,247,0.4)')}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--dark-600)')}
+                      >
+                        <div>
+                          <p style={{ fontSize: '13px', fontWeight: 600 }}>{s.platform}</p>
+                          <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Search: "{s.searchQuery}"</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {s.estimatedPrice && <span className="tag-accent" style={{ fontSize: '11px' }}>{s.estimatedPrice}</span>}
+                          <ExternalLink size={13} style={{ color: 'var(--text-muted)' }} />
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
               </div>
             </div>
           )}
