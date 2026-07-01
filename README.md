@@ -104,13 +104,10 @@ The result is an AI shopping assistant that feels like talking to an experienced
 
 # Screenshots
 
-> *(Replace with actual screenshots after deployment.)*
+| Landing Page |
+<img width="1896" height="876" alt="image" src="https://github.com/user-attachments/assets/122c44ff-88eb-4d7f-8e2d-d891ef2796bb" />
 
-| Landing Page | Fashion Translation | Outfit Recommendation |
-|--------------|--------------------|-----------------------|
-| Screenshot | Screenshot | Screenshot |
 
----
 
 # Tech Stack
 
