@@ -10,11 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
 
-*FlowZint AI Hackathon 2026 · Open Innovation Category*
 
-</div>
-
----
 
 ## The Problem
 
