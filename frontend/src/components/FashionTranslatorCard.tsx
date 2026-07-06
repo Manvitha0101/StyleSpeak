@@ -154,11 +154,11 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
             </div>
           )}
 
-          {/* Confidence Breakdown */}
+          {/* StyleSpeak Understood */}
           {terms.length > 0 && (
             <div style={{ marginBottom: '18px' }}>
               <p style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px', fontWeight: 600 }}>
-                Confidence Analysis
+                StyleSpeak Understood
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {terms.map(({ term, score }, i) => (
@@ -252,16 +252,36 @@ export default function FashionTranslatorCard({ analysis, userInput }: Props) {
                 outfit.shoes && { label: 'Shoes', value: outfit.shoes },
                 outfit.jacket && { label: 'Layer', value: outfit.jacket },
               ].filter(Boolean).map((item: any, i) => (
-                <div key={i} className="outfit-strip">
-                  <span className="label">{item.label}</span>
-                  <span>{item.value}</span>
-                </div>
+                <a key={i} href={getShopUrl('myntra', item.value)} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                  <div 
+                    className="outfit-strip"
+                    style={{ cursor: 'pointer', transition: 'all 0.2s', justifyContent: 'space-between' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(249,115,22,0.4)'; e.currentTarget.style.background = 'rgba(249,115,22,0.1)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(249,115,22,0.12)'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="label">{item.label}</span>
+                      <span>{item.value}</span>
+                    </div>
+                    <ExternalLink size={13} style={{ color: 'var(--accent-400)', opacity: 0.7 }} />
+                  </div>
+                </a>
               ))}
               {outfit.accessories && outfit.accessories.length > 0 && (
-                <div className="outfit-strip">
-                  <span className="label">Extras</span>
-                  <span>{outfit.accessories.join(' · ')}</span>
-                </div>
+                <a href={getShopUrl('myntra', outfit.accessories.join(' '))} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                  <div 
+                    className="outfit-strip"
+                    style={{ cursor: 'pointer', transition: 'all 0.2s', justifyContent: 'space-between' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(249,115,22,0.4)'; e.currentTarget.style.background = 'rgba(249,115,22,0.1)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(249,115,22,0.12)'; e.currentTarget.style.background = 'rgba(249,115,22,0.06)'; }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="label">Extras</span>
+                      <span>{outfit.accessories.join(' · ')}</span>
+                    </div>
+                    <ExternalLink size={13} style={{ color: 'var(--accent-400)', opacity: 0.7 }} />
+                  </div>
+                </a>
               )}
               {outfit.occasion && (
                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>

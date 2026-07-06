@@ -116,10 +116,7 @@ export const useChatStore = create<ChatStore>()(
           }));
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
-          let displayMsg = `I'm having trouble connecting right now. ${errorMsg}`;
-          if (errorMsg.includes('503')) {
-            displayMsg = "StyleSpeak is experiencing high AI demand right now. Retrying automatically...";
-          }
+          const displayMsg = errorMsg;
           const errorMessage = createMessage('assistant', displayMsg);
 
           set(state => ({
@@ -177,10 +174,7 @@ export const useChatStore = create<ChatStore>()(
           }));
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : 'Image analysis failed.';
-          let displayMsg = `Unable to analyze the image. ${errorMsg}`;
-          if (errorMsg.includes('503')) {
-            displayMsg = "StyleSpeak is experiencing high AI demand right now. Retrying automatically...";
-          }
+          const displayMsg = errorMsg;
           const errorMessage = createMessage('assistant', displayMsg);
 
           set(state => ({
@@ -230,10 +224,7 @@ export const useChatStore = create<ChatStore>()(
           }));
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : 'Analysis failed';
-          let displayMsg = `Could not analyze the image. ${errorMsg}`;
-          if (errorMsg.includes('503')) {
-            displayMsg = "StyleSpeak is experiencing high AI demand right now. Retrying automatically...";
-          }
+          const displayMsg = errorMsg;
           const errorMessage = createMessage('assistant', displayMsg);
 
           set(state => ({

@@ -39,12 +39,12 @@ function fileToBase64(file: File): Promise<{ base64: string; mimeType: string }>
 }
 
 /* ─── Suggestion chips ─── */
-const DEFAULT_CHIPS = [
-  { label: '💰 Budget', prompt: 'What is your budget range?' },
-  { label: '📅 Occasion', prompt: 'What occasion is this for?' },
-  { label: '🎨 Color', prompt: 'Any preferred colors?' },
-  { label: '⚡ Style', prompt: 'What fashion style do you prefer?' },
-  { label: '📏 Fit', prompt: 'What fit do you prefer — slim, relaxed, or oversized?' },
+const REFINE_CHIPS = [
+  { label: '🟣 More Formal', prompt: 'Make it more formal' },
+  { label: '🟣 Different Color', prompt: 'Show me different colors' },
+  { label: '🟣 Lower Budget', prompt: 'Can we find a lower budget option?' },
+  { label: '🟣 Summer Friendly', prompt: 'Make it summer friendly' },
+  { label: '🟣 Luxury Brands', prompt: 'Suggest luxury brands' },
 ];
 
 const QUICK_STARTERS = [
@@ -341,12 +341,15 @@ export default function ChatPage() {
 
           {/* Suggestion chips after last AI message */}
           {messages.length > 0 && !isLoading && messages[messages.length - 1].role === 'assistant' && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px', paddingLeft: 42 }}>
-              {DEFAULT_CHIPS.map(({ label, prompt }) => (
-                <button key={label} className="chip" onClick={() => handleChip(prompt)} style={{ fontSize: '12px', padding: '6px 12px' }}>
-                  {label}
-                </button>
-              ))}
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '16px', paddingLeft: 42 }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Would you like to refine this outfit?</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {REFINE_CHIPS.map(({ label, prompt }) => (
+                  <button key={label} className="chip" onClick={() => handleChip(prompt)} style={{ fontSize: '12px', padding: '6px 12px' }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
             </motion.div>
           )}
 

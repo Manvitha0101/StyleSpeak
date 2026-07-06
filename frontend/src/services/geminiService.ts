@@ -190,9 +190,47 @@ class GeminiService {
         throw new Error('Gemini API key not configured. Add VITE_GEMINI_API_KEY to your .env file.');
       }
       this.genAI = new GoogleGenerativeAI(API_KEY);
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+      this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     }
     return this.model;
+  }
+
+  private async withRetry<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
+    let lastError: any;
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        return await operation();
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.status || error?.response?.status;
+        const message = error?.message?.toLowerCase() || '';
+        
+        // Log technical details only in development
+        if (import.meta.env.DEV) {
+          console.error(`[Gemini API Error] Attempt ${i + 1}/${maxRetries}:`, error);
+        }
+
+        const isRetryable = status === 429 || status === 503 || message.includes('network') || message.includes('fetch') || message.includes('quota');
+        
+        if (isRetryable && i < maxRetries - 1) {
+          const delay = status === 429 || message.includes('quota') ? 2000 * (i + 1) : 1000;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+
+        // Throw user-friendly error
+        if (status === 429 || message.includes('429') || message.includes('quota')) {
+          throw new Error('StyleSpeak is temporarily unavailable because the AI request limit has been reached. Please try again later or use another API key.');
+        } else if (status === 503 || message.includes('503')) {
+          throw new Error('StyleSpeak is currently overloaded. Please try again in a few moments.');
+        } else if (message.includes('network') || message.includes('fetch')) {
+          throw new Error('Please check your internet connection and try again.');
+        }
+        
+        throw new Error('StyleSpeak encountered an unexpected error. Please try again.');
+      }
+    }
+    throw lastError;
   }
 
   /**
@@ -247,12 +285,12 @@ Return EXACTLY this JSON structure first, then a human message:
 }
 
 ---CONVERSATIONAL_RESPONSE---
-[Write a warm, expert 2-3 sentence conversational response about what you see. DO NOT use markdown formatting, headings, or bullet points. DO NOT repeat the JSON data.]`;
+[Write a warm, chic, and expert 2-3 sentence conversational response. Speak like a high-end personal stylist (e.g., 'This piece is an absolute classic...', 'I love the interplay of textures here...'). DO NOT use markdown formatting, headings, or bullet points. DO NOT repeat the JSON data.]`;
 
-    const result = await model.generateContent([
+    const result = await this.withRetry(() => model.generateContent([
       { text: prompt },
       { inlineData: { data: imageBase64, mimeType } },
-    ]);
+    ]));
 
     const response = result.response.text();
     return this.parseStructuredResponse(response);
@@ -312,9 +350,9 @@ Return EXACTLY this JSON structure first:
 }
 
 ---CONVERSATIONAL_RESPONSE---
-[Write a warm, knowledgeable 2-3 sentence response. Acknowledge their description, tell them what you understood, and ask the follow-up questions naturally]`;
+[Write a warm, chic, and knowledgeable 2-3 sentence response. Speak like a high-end personal fashion expert. Acknowledge their description, tell them what you understood, and ask the follow-up questions naturally]`;
 
-    const result = await model.generateContent(prompt);
+    const result = await this.withRetry(() => model.generateContent(prompt));
     return this.parseStructuredResponse(result.response.text());
   }
 
@@ -337,11 +375,11 @@ ${historyContext}
 Current message: "${message}"
 
 Behavior rules:
-- Your conversational response MUST be extremely short, friendly, and plain text (2-3 simple sentences max).
+- Your conversational response MUST be extremely short, chic, and plain text (2-3 simple sentences max). Speak like a high-end personal fashion expert.
 - DO NOT use markdown headings (#, ##, ###), bolding (**), or bullet points (*).
 - DO NOT repeat the recommendations, prices, or outfit ideas in your conversational text! Those MUST only go into the JSON METADATA section below. The UI will render them beautifully from the JSON.
 - If you need more info, ask MAX 2 follow-up questions, naturally embedded in your short conversation.
-- Be warm and encouraging — like a knowledgeable friend.
+- Be warm, confident, and encouraging — like an elite but approachable personal stylist.
 
 If recommendations can be made, include at the end:
 ---METADATA---
@@ -378,7 +416,7 @@ If recommendations can be made, include at the end:
     }
 
     try {
-      const result = await model.generateContent(parts);
+      const result = await this.withRetry(() => model.generateContent(parts));
       const responseText = result.response.text();
 
       const metadataMatch = responseText.match(/---METADATA---\s*([\s\S]*?)(?:$|---)/);
@@ -448,10 +486,10 @@ Respond with JSON followed by a warm conversational message:
 ---CONVERSATIONAL_RESPONSE---
 [Write a warm, encouraging, and specific 3-4 sentence personal style reading. Be positive and actionable. Never be harsh. Focus on what WORKS for them.]`;
 
-    const result = await model.generateContent([
+    const result = await this.withRetry(() => model.generateContent([
       { text: prompt },
       { inlineData: { data: imageBase64, mimeType } },
-    ]);
+    ]));
 
     const responseText = result.response.text();
     const jsonMatch = responseText.match(/\{[\s\S]*?\}(?=\s*---CONVERSATIONAL_RESPONSE---)/);
@@ -477,9 +515,9 @@ Respond with JSON followed by a warm conversational message:
    */
   async explainTerm(term: string): Promise<string> {
     const model = this.getModel();
-    const result = await model.generateContent(
+    const result = await this.withRetry(() => model.generateContent(
       `You are StyleSense AI. Explain the fashion term "${term}" in 2-3 sentences in a friendly, accessible way. Include one example of who wears it or when to wear it. Keep it conversational, not textbook.`
-    );
+    ));
     return result.response.text();
   }
 
