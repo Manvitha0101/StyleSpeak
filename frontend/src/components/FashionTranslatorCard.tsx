@@ -25,7 +25,7 @@ function TermPill({ term, onDefine }: { term: string; onDefine: (t: string) => v
 function ConfidenceBar({ score }: { score: number }) {
   const color = score >= 90 ? '#22c55e' : score >= 75 ? '#f59e0b' : '#a855f7';
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+    <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
       <div style={{ flex: 1, height: 4, background: 'var(--dark-600)', borderRadius: 2, overflow: 'hidden' }}>
         <motion.div
           initial={{ width: 0 }}
@@ -34,7 +34,6 @@ function ConfidenceBar({ score }: { score: number }) {
           style={{ height: '100%', background: color, borderRadius: 2 }}
         />
       </div>
-      <span style={{ fontSize: '11px', fontWeight: 700, color, minWidth: 30 }}>{score}%</span>
     </div>
   );
 }
