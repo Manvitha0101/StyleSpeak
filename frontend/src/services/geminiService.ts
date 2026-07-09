@@ -190,7 +190,7 @@ class GeminiService {
         throw new Error('Gemini API key not configured. Add VITE_GEMINI_API_KEY to your .env file.');
       }
       this.genAI = new GoogleGenerativeAI(API_KEY);
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     }
     return this.model;
   }
